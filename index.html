@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>Username Lab — Telegram</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#121a2e;--line:#263653;--text:#eef4ff;--muted:#9aacc8;--accent:#72e0c0;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{min-height:100%;background:var(--bg)}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(ellipse at top,#172746 0,#0b1020 56%);color:var(--text);min-height:100svh;padding:calc(16px + var(--safe-top)) 14px calc(22px + var(--safe-bottom));font-size:16px}
+main{max-width:760px;margin:0 auto;width:100%}
+.eyebrow{color:var(--accent);text-transform:uppercase;letter-spacing:.14em;font-size:11px;font-weight:800}
+h1{margin:7px 0 8px;font-size:clamp(29px,8vw,42px);line-height:1.04;letter-spacing:-.045em}
+.intro{color:var(--muted);line-height:1.5;font-size:14px;margin:0;max-width:620px}
+.panel{background:rgba(18,26,46,.96);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:15px;box-shadow:0 12px 36px #0002}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field.full{grid-column:1/-1}
+label.field-label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}
+select{appearance:none;-webkit-appearance:none;width:100%;min-height:48px;padding:12px 38px 12px 12px;border-radius:12px;border:1px solid var(--line);background:#0c1426;color:var(--text);font:inherit;font-size:15px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239aacc8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
+.checkrow{display:flex;align-items:center;gap:10px;margin-top:15px;color:var(--muted);font-size:14px;line-height:1.35;min-height:28px}
+input[type=checkbox]{width:20px;height:20px;flex-shrink:0;accent-color:var(--accent)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:17px}
+button{border:0;border-radius:12px;min-height:46px;padding:11px 13px;background:var(--accent);color:#06231c;font-weight:750;cursor:pointer;font:inherit;font-size:14px;touch-action:manipulation}
+button:active{opacity:.78;transform:scale(.99)}
+button.secondary{background:#1b2942;border:1px solid var(--line);color:var(--text)}
+#generate{grid-column:1/-1;min-height:51px;font-size:16px}
+.results-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.results-head h2{margin:0;font-size:19px;letter-spacing:-.02em}
+#count{display:inline-flex;align-items:center;justify-content:center;min-width:25px;height:24px;border:1px solid var(--line);border-radius:999px;padding:0 7px;color:var(--accent);font-size:12px;margin-left:4px}
+#status{color:var(--muted);font-size:12px;line-height:1.4}
+.list{display:grid;grid-template-columns:1fr;gap:8px;margin-top:14px}
+.item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 11px 11px 14px;border:1px solid var(--line);border-radius:13px;background:#0d1528;min-width:0;min-height:62px}
+.handle{font-size:21px;font-weight:800;letter-spacing:.025em;overflow-wrap:anywhere;min-width:0}
+.item button{padding:8px 11px;min-height:38px;font-size:12px;flex-shrink:0}
+.empty{color:var(--muted);padding:18px 0;font-size:14px}
+.note{color:var(--muted);font-size:12px;line-height:1.5;margin:14px 0 0}
+.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 8px;color:var(--muted);font-size:10px}
+@media(min-width:560px){body{padding-left:20px;padding-right:20px}.panel{padding:20px}.controls{grid-template-columns:repeat(3,minmax(0,1fr))}.field.full{grid-column:auto}.actions{grid-template-columns:1fr 1fr 1fr}#generate{grid-column:auto}.list{grid-template-columns:repeat(2,minmax(0,1fr))}.item{padding:12px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<div class="eyebrow">Username Lab · Telegram</div>
+<h1>Генератор<br>коротких ников</h1>
+<p class="intro">Необычные сочетания на 4–5 символов. Генерируй, копируй и отмечай уже проверенные варианты.</p>
+
+<section class="panel">
+<div class="controls">
+<div class="field">
+<label class="field-label" for="length">Длина ника</label>
+<select id="length"><option value="mix">4–5 символов</option><option value="4">Только 4</option><option value="5">Только 5</option></select>
+</div>
+<div class="field">
+<label class="field-label" for="style">Стиль</label>
+<select id="style"><option value="balanced">Сбалансированный</option><option value="rare">Редкие согласные</option><option value="soft">Мягкий / эстетичный</option><option value="brand">Как бренд</option><option value="vowels">Больше гласных</option></select>
+</div>
+<div class="field full">
+<label class="field-label" for="amount">Вариантов за раз</label>
+<select id="amount"><option value="10">10 вариантов</option><option value="20" selected>20 вариантов</option><option value="40">40 вариантов</option><option value="60">60 вариантов</option></select>
+</div>
+</div>
+<label class="checkrow"><input type="checkbox" id="avoidSeen" checked><span>Не повторять ники из предыдущих генераций</span></label>
+<div class="actions">
+<button id="generate">Сгенерировать ники</button>
+<button class="secondary" id="copyAll">Копировать список</button>
+<button class="secondary" id="clearSeen">Сбросить историю</button>
+</div>
+</section>
+
+<section class="panel">
+<div class="results-head"><h2>Твои варианты <span id="count">0</span></h2><span id="status" aria-live="polite">Готов к генерации</span></div>
+<div class="list" id="results" aria-live="polite"><div class="empty">Нажми кнопку выше — здесь появятся ники.</div></div>
+<p class="note">Важно: генератор не проверяет доступность имён в Telegram. Он только создаёт варианты и убирает повторы в текущей сессии. Свободность выбранного ника нужно проверить отдельно.</p>
+</section>
+</main>
+<script>
+(() => {
+const $=id=>document.getElementById(id),seen=new Set();let current=[];
+const vowels="aeiou",consonants="bcdfghjklmnpqrstvwxyz";
+const pick=s=>s[Math.floor(Math.random()*s.length)];
+function makeName(len,style){
+ const pools={balanced:consonants,rare:"jkqvwxzlnr",soft:"lnmrsvy",brand:consonants,vowels:"lnrsv"};
+ const patterns={
+  balanced:len===4?["CVCV","CVCC","CCVC","VCVC"]:["CVCVC","CVCCV","CCVCV","VCVCC","CVCCC"],
+  rare:len===4?["CCVC","CVCV","CVCC","VCVC"]:["CCVCV","CVCVC","CVCCV","VCVCC"],
+  soft:len===4?["CVCV","VCVC","CVVC","CVCV"]:["CVCVC","CVVCV","VCVCV","CVCVV"],
+  brand:len===4?["CVCV","CVCC","CCVC","VCVC"]:["CVCVC","CVCCV","CCVCV","CVCVV"],
+  vowels:len===4?["VCVC","CVVC","VCCV","VCVV"]:["VCVCV","CVVCV","VCCVC","CVCVV"]
+ };
+ let out="";for(const p of pick(patterns[style]||patterns.balanced)){out+=p==="C"?pick(pools[style]||consonants):p==="V"?pick(vowels):""}
+ // Patterns are strings, so each character maps to one letter type.
+ out="";const pattern=pick(patterns[style]||patterns.balanced);
+ for(const p of pattern){out+=p==="C"?pick(pools[style]||consonants):p==="V"?pick(vowels):""}
+ return out;
+}
+function valid(s){return /^[a-z]{4,5}$/.test(s)&&!/(.)\1\1/.test(s)&&!(/^[aeiou]{2}/.test(s))}
+function render(names){
+ const root=$("results");root.replaceChildren();$("count").textContent=names.length;
+ if(!names.length){const e=document.createElement("div");e.className="empty";e.textContent="Новых вариантов нет. Сбрось историю или измени настройки.";root.append(e);return}
+ for(const name of names){
+  const card=document.createElement("div");card.className="item";
+  const label=document.createElement("div");label.className="handle";label.textContent="@"+name;
+  const btn=document.createElement("button");btn.className="secondary";btn.textContent="Копировать";
+  btn.addEventListener("click",async()=>{const ok=await copyText("@"+name);btn.textContent=ok?"Скопировано ✓":"Выдели вручную";if(ok)setTimeout(()=>btn.textContent="Копировать",1300)});
+  card.append(label,btn);root.append(card);
+ }
+}
+async function copyText(text){
+ try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);return true}}catch(e){}
+ // iOS-friendly fallback
+ const area=document.createElement("textarea");area.value=text;area.setAttribute("readonly","");area.style.position="fixed";area.style.opacity="0";area.style.fontSize="16px";document.body.append(area);area.select();area.setSelectionRange(0,area.value.length);
+ let ok=false;try{ok=document.execCommand("copy")}catch(e){}area.remove();return ok;
+}
+function generate(){
+ const setting=$("length").value,style=$("style").value,amount=Number($("amount").value),avoid=$("avoidSeen").checked,batch=new Set();let tries=0;
+ while(batch.size<amount&&tries<amount*250){tries++;const len=setting==="mix"?(Math.random()<.55?4:5):Number(setting);const n=makeName(len,style);if(!valid(n)||batch.has(n)||(avoid&&seen.has(n)))continue;batch.add(n)}
+ current=[...batch];current.forEach(n=>seen.add(n));render(current);$("status").textContent=`${current.length} новых · всего ${seen.size}`;
+}
+$("generate").addEventListener("click",generate);
+$("copyAll").addEventListener("click",async()=>{if(!current.length){$("status").textContent="Сначала сгенерируй ники";return}const ok=await copyText(current.map(n=>"@"+n).join("\n"));$("status").textContent=ok?"Список скопирован":"Копирование недоступно — попробуй отдельные ники"});
+$("clearSeen").addEventListener("click",()=>{seen.clear();$("status").textContent="История очищена";generate()});
+})();
+</script>
+</body>
+</html>
